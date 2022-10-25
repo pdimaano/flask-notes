@@ -2,6 +2,7 @@
 from flask import Flask, redirect, render_template, session, flash
 from models import db, connect_db, User
 from forms import RegisterForm, LoginForm, CSRFProtectForm
+from werkzeug.exceptions import Unauthorized
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask_notes'
@@ -26,7 +27,7 @@ def user_registration():
     """ Handles user registration. Displays HTML form, and
     registers new users on form submission.
 
-    On successful registration, redirects to /secret page.
+    On successful registration, redirects to /users/username page.
     Else, re-render the HTML with any validation errors."""
 
     form = RegisterForm()
@@ -61,6 +62,7 @@ def user_registration():
 
 @app.route('/login', methods=['GET', 'POST'])
 def user_login():
+    """Show a form that when submitted will login a user."""
 
     form = LoginForm()
 
@@ -83,8 +85,8 @@ def user_login():
 
 
 @app.get('/users/<username>')
-def show_secret(username):
-    """ Shows the secret page only for logged in users. """
+def show_user_page(username):
+    """ Shows the user page only for logged in users. """
 
     user = User.query.get_or_404(username)
     form = CSRFProtectForm()
@@ -93,9 +95,12 @@ def show_secret(username):
         flash("You must be logged in to view this page.")
         return redirect("/")
 
+    if username != session["username"]:
+        raise Unauthorized()
+
     else:
         return render_template(
-            'secret.html',
+            'user.html',
             user=user,
             form=form)
 

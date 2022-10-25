@@ -53,6 +53,7 @@ class User(db.Model):
                  first_name,
                  last_name,
                  email):
+        """ Registers the user and hashes the password. """
 
         hashed = bcrypt.generate_password_hash(password).decode('utf8')
 

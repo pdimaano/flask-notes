@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title%} Secret{% endblock %}
+{% block title%} User {% endblock %}
 
 {% block content %}
 <h1>Information for {{ user.first_name }}</h1>
@@ -12,7 +12,7 @@
   <li>Email: {{ user.email }}</li>
 </ul>
 
-{% if 'username' in session %}
+  {% if 'username' in session %}
 
     <form action="/logout" method="POST">
       {{form.hidden_tag()}}
