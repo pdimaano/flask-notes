@@ -1,5 +1,5 @@
 
-from flask import Flask, request, redirect, render_template, session
+from flask import Flask, request, redirect, render_template, session, flash
 from models import db, connect_db, User
 from forms import RegisterForm, LoginForm
 
@@ -79,6 +79,11 @@ def user_login():
 
 @app.get('/secret')
 def show_secret():
-    """ Shows the secret page """
+    """ Shows the secret page only for logged in users. """
 
-    return render_template('secret.html')
+    if "username" not in session:
+        flash("You must be logged in to view this page.")
+        return redirect("/")
+
+    else:
+        return render_template('secret.html')
