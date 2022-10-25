@@ -1,7 +1,7 @@
 
 from flask import Flask, redirect, render_template, session, flash
 from models import db, connect_db, User
-from forms import RegisterForm, LoginForm
+from forms import RegisterForm, LoginForm, CSRFProtectForm
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask_notes'
@@ -77,7 +77,9 @@ def user_login():
         else:
             form.username.errors = ['Incorrect username/password combination']
 
-    return render_template('login.html', form=form)
+    return render_template(
+        'login.html',
+        form=form)
 
 
 @app.get('/users/<username>')
@@ -85,10 +87,25 @@ def show_secret(username):
     """ Shows the secret page only for logged in users. """
 
     user = User.query.get_or_404(username)
+    form = CSRFProtectForm()
 
     if "username" not in session:
         flash("You must be logged in to view this page.")
         return redirect("/")
 
     else:
-        return render_template('secret.html', user=user)
+        return render_template(
+            'secret.html',
+            user=user,
+            form=form)
+
+
+@app.post("/logout")
+def logout():
+    """Logs user out and redirects to homepage."""
+
+    form = CSRFProtectForm()
+    if form.validate_on_submit():
+        session.pop("username", None)
+
+    return redirect("/")

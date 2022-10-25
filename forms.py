@@ -67,3 +67,7 @@ class LoginForm(FlaskForm):
             Length(
                 max=100,
                 message="Max length is 100 characters.")])
+
+
+class CSRFProtectForm(FlaskForm):
+    """Form just for CSRF Protection."""
