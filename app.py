@@ -1,14 +1,17 @@
 
-from flask import Flask, request, redirect, render_template, session, flash
+from flask import Flask, redirect, render_template, session, flash
 from models import db, connect_db, User
 from forms import RegisterForm, LoginForm
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask-notes'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask_notes'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
+app.config['SECRET_KEY'] = 'Secret Something'
+
 
 connect_db(app)
+db.create_all()
 
 
 @app.get("/")
@@ -45,10 +48,10 @@ def user_registration():
         )
 
         db.session.add(user)
-        db.commit()
+        db.session.commit()
         session['username'] = user.username
 
-        return redirect('/secret')
+        return redirect(f'/users/{username}')
 
     else:
         return render_template(
@@ -69,7 +72,7 @@ def user_login():
 
         if user:
             session['username'] = user.username
-            return redirect('/secret')
+            return redirect(f'/users/{username}')
 
         else:
             form.username.errors = ['Incorrect username/password combination']
@@ -77,13 +80,15 @@ def user_login():
     return render_template('login.html', form=form)
 
 
-@app.get('/secret')
-def show_secret():
+@app.get('/users/<username>')
+def show_secret(username):
     """ Shows the secret page only for logged in users. """
+
+    user = User.query.get_or_404(username)
 
     if "username" not in session:
         flash("You must be logged in to view this page.")
         return redirect("/")
 
     else:
-        return render_template('secret.html')
+        return render_template('secret.html', user=user)
