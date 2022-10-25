@@ -20,6 +20,9 @@ class User(db.Model):
 
     __tablename__ = 'users'
 
+    # access list of user's notes
+    notes = db.relationship('Note', backref='users', cascade="all, delete")
+
     username = db.Column(
         db.String(20),
         primary_key=True
@@ -78,3 +81,35 @@ class User(db.Model):
             return user
         else:
             return False
+
+    @classmethod
+    def delete_account(cls,
+                       username):
+        """ Remotes a user from the database"""
+
+        user = cls.query.filter_by(username=username).one_or_none()
+
+        db.session.delete(user)
+        db.session.commit()
+
+
+class Note(db.Model):
+    """ Individual Note """
+    # access the note's author with note.owner
+
+    __tablename__ = 'notes'
+
+    id = db.Column(db.Integer,
+                   primary_key=True,
+                   autoincrement=True)
+
+    title = db.Column(db.String(100),
+                      nullable=False)
+
+    content = db.Column(db.Text,
+                        nullable=False)
+
+    owner = db.Column(db.String(20),
+                      db.ForeignKey('users.username'),
+                      nullable=False,
+                      )

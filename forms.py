@@ -1,6 +1,6 @@
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, TextAreaField
 from wtforms.validators import InputRequired, Length, Email
 
 
@@ -67,6 +67,25 @@ class LoginForm(FlaskForm):
             Length(
                 max=100,
                 message="Max length is 100 characters.")])
+
+
+class AddNoteForm(FlaskForm):
+    " Form to add a note to a user's account"
+
+    title = StringField(
+        "Title",
+        validators=[
+            InputRequired(),
+            Length(
+                max=100,
+                message="Max length is 100 characters.")]
+    )
+
+    content = TextAreaField(
+        "Content",
+        validators=[
+            InputRequired()]
+    )
 
 
 class CSRFProtectForm(FlaskForm):

@@ -12,12 +12,26 @@
   <li>Email: {{ user.email }}</li>
 </ul>
 
-  {% if 'username' in session %}
+<h3>Notes:</h3>
 
-    <form action="/logout" method="POST">
-      {{form.hidden_tag()}}
-      <button type="submit" class="btn btn-primary">Logout</button>
-    </form>
-  {% endif %}
+{% for note in user.notes %}
+<a href="f'/notes/{{note.id}}/update'">{{note.title}}</a>
+{%endfor%}
+
+<a href="/users/{{user.username}}/notes/add" class="btn btn-secondary"> Add a note</a>
+
+{% if 'username' in session %}
+
+<form action="/logout" method="POST">
+  {{form.hidden_tag()}}
+  <button type="submit" class="btn btn-primary">Logout</button>
+</form>
+
+<form action="/users/{{user.username}}/delete" method="POST">
+  {{form.hidden_tag()}}
+  <button type="submit" class="btn btn-danger">Delete Account</button>
+</form>
+
+{% endif %}
 
 {% endblock %}
