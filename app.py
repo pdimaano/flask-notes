@@ -1,7 +1,7 @@
 
 from flask import Flask, redirect, render_template, session, flash
 from models import db, connect_db, User, Note
-from forms import RegisterForm, LoginForm, CSRFProtectForm, AddNoteForm
+from forms import RegisterForm, LoginForm, CSRFProtectForm, AddNoteForm, EditNoteForm
 from flask_debugtoolbar import DebugToolbarExtension
 
 from werkzeug.exceptions import Unauthorized
@@ -154,6 +154,9 @@ def add_note(username):
 
     form = AddNoteForm()
 
+    if username != session["username"]:
+        raise Unauthorized()
+
     if form.validate_on_submit():
         title = form.title.data
         content = form.content.data
@@ -172,4 +175,42 @@ def add_note(username):
     else:
         return render_template(
             'note_add.html',
-            form=form, username=username)
+            form=form)
+
+
+@app.route('/notes/<note_id>/update', methods=['GET', 'POST'])
+def edit_note(note_id):
+    """ Edit an already existing note for a user """
+
+    note = Note.query.get_or_404(note_id)
+    form = EditNoteForm(obj=note)
+
+    if note.owner != session["username"]:
+        raise Unauthorized()
+
+    if form.validate_on_submit():
+        note.title = form.title.data
+        note.content = form.content.data
+
+        db.session.commit()
+
+        return redirect(f'/users/{note.owner}')
+
+    else:
+        return render_template(
+            'note_edit.html',
+            form=form, note=note)
+
+
+@app.post("/notes/<note_id>/delete")
+def delete_note(note_id):
+    """Deletes note and redirects to user detail page."""
+
+    note = Note.query.get_or_404(note_id)
+    if note.owner != session["username"]:
+        raise Unauthorized()
+
+    db.session.delete(note)
+    db.session.commit()
+
+    return redirect(f"/users/{note.owner}")

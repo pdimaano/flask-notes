@@ -88,5 +88,24 @@ class AddNoteForm(FlaskForm):
     )
 
 
+class EditNoteForm(FlaskForm):
+    " Form to edit a note to a user's account"
+
+    title = StringField(
+        "Title",
+        validators=[
+            InputRequired(),
+            Length(
+                max=100,
+                message="Max length is 100 characters.")]
+    )
+
+    content = TextAreaField(
+        "Content",
+        validators=[
+            InputRequired()]
+    )
+
+
 class CSRFProtectForm(FlaskForm):
     """Form just for CSRF Protection."""

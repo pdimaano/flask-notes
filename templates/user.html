@@ -15,7 +15,7 @@
 <h3>Notes:</h3>
 
 {% for note in user.notes %}
-<a href="f'/notes/{{note.id}}/update'">{{note.title}}</a>
+<a href="/notes/{{note.id}}/update">{{note.title}}</a>
 {%endfor%}
 
 <a href="/users/{{user.username}}/notes/add" class="btn btn-secondary"> Add a note</a>
