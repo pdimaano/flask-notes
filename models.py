@@ -21,7 +21,7 @@ class User(db.Model):
     __tablename__ = 'users'
 
     # access list of user's notes
-    notes = db.relationship('Note', backref='users', cascade="all, delete")
+    notes = db.relationship('Note', backref='owner', cascade="all, delete")
 
     username = db.Column(
         db.String(20),
@@ -85,7 +85,7 @@ class User(db.Model):
     @classmethod
     def delete_account(cls,
                        username):
-        """ Remotes a user from the database"""
+        """ Removes a user from the database"""
 
         user = cls.query.filter_by(username=username).one_or_none()
 

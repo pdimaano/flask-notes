@@ -20,8 +20,6 @@
 
 <a href="/users/{{user.username}}/notes/add" class="btn btn-secondary"> Add a note</a>
 
-{% if 'username' in session %}
-
 <form action="/logout" method="POST">
   {{form.hidden_tag()}}
   <button type="submit" class="btn btn-primary">Logout</button>
@@ -31,7 +29,5 @@
   {{form.hidden_tag()}}
   <button type="submit" class="btn btn-danger">Delete Account</button>
 </form>
-
-{% endif %}
 
 {% endblock %}

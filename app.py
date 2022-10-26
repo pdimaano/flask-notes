@@ -152,10 +152,10 @@ def delete_account(username):
 def add_note(username):
     """ Adds a new note for a user """
 
-    form = AddNoteForm()
-
     if username != session["username"]:
         raise Unauthorized()
+
+    form = AddNoteForm()
 
     if form.validate_on_submit():
         title = form.title.data
@@ -205,6 +205,7 @@ def edit_note(note_id):
 @app.post("/notes/<note_id>/delete")
 def delete_note(note_id):
     """Deletes note and redirects to user detail page."""
+    #TODO: CSRF validation
 
     note = Note.query.get_or_404(note_id)
     if note.owner != session["username"]:
